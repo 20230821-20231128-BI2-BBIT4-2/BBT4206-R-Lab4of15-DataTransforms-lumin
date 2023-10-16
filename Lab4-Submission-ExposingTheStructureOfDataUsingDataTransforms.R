@@ -1,43 +1,25 @@
----
-title: "Business Intelligence Project"
-author: "<Specify your name here>"
-date: "<Specify the date when you submitted the lab>"
-output:
-  github_document: 
-    toc: yes
-    toc_depth: 4
-    fig_width: 6
-    fig_height: 4
-    df_print: default
-editor_options:
-  chunk_output_type: console
----
+# Consider a library as the location where packages are stored.
+# Execute the following command to list all the libraries available in your
+# computer:
+.libPaths()
 
-# Student Details
+# One of the libraries should be a folder inside the project if you are using
+# renv
 
-|                                              |     |
-|----------------------------------------------|-----|
-| **Student ID Number**                        | 112827,123324,134265 |
-| **Student Name**                             | Kenneth Mungai,Kelly Noella, Emmanuel Kiptoo |
-| **BBIT 4.2 Group**                           | A,B |
-| **BI Project Group Name/ID (if applicable)** | Lumin |
+# Then execute the following command to see which packages are available in
+# each library:
+lapply(.libPaths(), list.files)
 
-# Setup Chunk
 
-**Note:** the following KnitR options have been set as the global defaults: <BR> `knitr::opts_chunk$set(echo = TRUE, warning = FALSE, eval = TRUE, collapse = FALSE, tidy = TRUE)`.
 
-More KnitR options are documented here <https://bookdown.org/yihui/rmarkdown-cookbook/chunk-options.html> and here <https://yihui.org/knitr/options/>.
+if (require("languageserver")) {
+  require("languageserver")
+} else {
+  install.packages("languageserver", dependencies = TRUE,
+                   repos = "https://cloud.r-project.org")
+}
 
-```{r setup, include=FALSE}
-library(formatR)
-knitr::opts_chunk$set(
-  warning = FALSE,
-  collapse = FALSE
-)
-```
-
-# STEP 1. Install and Load the Required Packages
-```{r step-one-chunk}
+# STEP 1. Install and Load the Required Packages ----
 ## mlbench ----
 if (require("mlbench")) {
   require("mlbench")
@@ -85,17 +67,12 @@ if (require("FactoMineR")) {
   install.packages("FactoMineR", dependencies = TRUE,
                    repos = "https://cloud.r-project.org")
 }
-library(readr)
-```
 
-# STEP 2. Load the Dataset
-```{r step-two-chunk}
+## STEP 2. Load the Dataset ----
+library(readr)
 StudentPerformanceDataset <- read_csv("/home/ki3ani/BBT4206-R-Lab4of15-DataTransforms-lumin/data/perfomance-dataset.csv")
-library(readr)
-```
 
-# STEP 3. Apply a Scale Data Transform
-```{r step-three-chunk}
+## STEP 3. Apply a Scale Data Transform ----
 # Load the caret package if not already loaded
 if (!requireNamespace("caret", quietly = TRUE)) {
   install.packages("caret")
@@ -124,11 +101,10 @@ hist(student_performance_scale_transform$study_time, main = "Histogram for Scale
 hist(student_performance_scale_transform$repeats_since_Y1, main = "Histogram for Scaled repeats_since_Y1")
 hist(student_performance_scale_transform$night_out, main = "Histogram for Scaled night_out")
 hist(student_performance_scale_transform$family_relationships, main = "Histogram for Scaled family_relationships")
-library(readr)
-```
 
-# STEP 4. Apply a Centre Data Transform 
-```{r step-four-chunk}
+# Center Data Transform ----
+
+## STEP 4. Apply a Centre Data Transform ----
 # Load the caret package if not already loaded
 if (!requireNamespace("caret", quietly = TRUE)) {
   install.packages("caret")
@@ -144,11 +120,8 @@ student_performance_center_transform <- predict(model_of_the_transform_center, s
 
 # AFTER
 summary(student_performance_center_transform)
-library(readr)
-```
 
 # STEP 5. Apply a Standardize Data Transform
-```{r step-five-chunk}
 ### The Standardize Basic Transform on the Student Performance Dataset ----
 ##Perform Mean/Median imputation to address mssing values
 # Check for missing values in the specified columns
@@ -184,11 +157,13 @@ student_performance_standardize_transform <- predict(model_of_the_transform_stan
 summary(student_performance_standardize_transform)
 sapply(student_performance_standardize_transform[, c("study_time", "repeats_since_Y1", "night_out", "family_relationships")], sd)
 
-library(readr)
-```
+## STEP 6. Apply a Normalize Data Transform ----
+# Normalizing a dataset implies ensuring the numerical data are
+# between [0, 1] (inclusive).
 
-# STEP 6. Apply a Normalize Data Transform 
-```{r step-six-chunk}
+### Benefits of the Normalize Data Transform ----
+# ... [Include the benefits as described in your code]
+
 ### The Normalize Transform on the Student Performance Dataset ----
 # BEFORE
 summary(student_performance_standardize_transform)
@@ -205,11 +180,10 @@ hist(student_performance_normalize_transform$study_time, main = "Histogram for N
 hist(student_performance_normalize_transform$repeats_since_Y1, main = "Histogram for Normalized Repeats Since Y1")
 hist(student_performance_normalize_transform$night_out, main = "Histogram for Normalized Night Out")
 hist(student_performance_normalize_transform$family_relationships, main = "Histogram for Normalized Family Relationships")
-library(readr)
-```
 
-# STEP 7. Apply a Box-Cox Power Transform
-```{r step-seven-chunk}
+
+
+## STEP 7. Apply a Box-Cox Power Transform ----
 ### Box-Cox Power Transform ---
 # Load your dataset (replace 'student_performance_dataset.csv' with your actual dataset file name)
 student_performance_dataset <- read.csv("/home/ki3ani/BBT4206-R-Lab4of15-DataTransforms-lumin/data/perfomance-dataset.csv")
@@ -256,11 +230,9 @@ for (i in 1:length(numeric_columns)) {
   hist(student_performance_dataset_box_cox_transform[[i]], main = numeric_columns[i])
 }
 
-library(readr)
-```
+# Yeo-Johnson Power Transform ----
+## STEP 8. Apply a Yeo-Johnson Power Transform ----
 
-# STEP 8. Apply a Yeo-Johnson Power Transform
-```{r step-eight-chunk}
 # BEFORE
 summary(student_performance_dataset)
 
@@ -280,6 +252,85 @@ summary(student_performance_yeo_johnson_transform)
 # Calculate the skewness after the Yeo-Johnson transform
 sapply(student_performance_yeo_johnson_transform[, c(5, 10, 15, 20, 25)], skewness, type = 2)
 sapply(student_performance_yeo_johnson_transform[, c(5, 10, 15, 20, 25)], sd)
-library(readr)
-```
 
+
+
+## STEP 9.a. PCA Linear Algebra Transform for Dimensionality Reduction ----
+# Check for missing values
+missing_values <- colSums(is.na(student_performance_pca))
+
+# Print columns with missing values
+print(missing_values)
+
+# Handle missing values (if necessary)
+# For example, you can impute missing values with the mean
+student_performance_pca <- na.omit(student_performance_pca)
+
+# Perform PCA
+pca_result <- prcomp(student_performance_pca, center = TRUE, scale. = TRUE)
+
+# View summary of PCA results
+summary(pca_result)
+
+# Access the transformed data (principal components)
+pca_transformed_data <- pca_result$x
+
+# STEP 9.b. PCA Linear Algebra Transform for Feature Extraction ----
+
+# Check for missing values (if necessary)
+# For example, you can impute missing values with the mean
+# student_performance_pca <- na.omit(student_performance_pca)
+
+# Perform PCA
+pca_result <- prcomp(student_performance_pca, center = TRUE, scale. = TRUE)
+
+# View summary of PCA results
+summary(pca_result)
+
+# Access the transformed data (principal components)
+pca_transformed_data <- pca_result$x
+
+# Scree Plot
+factoextra::fviz_eig(pca_result, addlabels = TRUE)
+
+# Loading Values
+loadings <- pca_result$rotation[, 1:2]
+
+# Interpretation using Cos2
+cos2 <- loadings^2
+
+# Biplot and Cos2 Combined Plot
+factoextra::fviz_pca_var(X = pca_result, col.var = "cos2",
+                         gradient.cols = c("red", "orange", "green"),
+                         repel = TRUE)
+
+
+
+
+## STEP 10. ICA Linear Algebra Transform for Dimensionality Reduction ----
+# Assuming you have installed the necessary package
+if (!requireNamespace("fastICA", quietly = TRUE)) {
+  install.packages("fastICA")
+}
+library(fastICA)
+
+# Assuming pca_transformed_data is your dataframe after PCA
+# Select the columns you want to apply ICA on
+ica_data <- pca_transformed_data[, c("PC1", "PC2", "PC3", "PC4")]
+
+# Perform ICA using the "R" method
+ica_result <- fastICA(ica_data, n.comp = 2, method = "R")
+
+# Access the transformed data (independent components)
+ica_transformed_data <- ica_result$S
+
+# Create a dataframe for the transformed data
+ica_df <- data.frame(IC1 = ica_transformed_data[, 1], IC2 = ica_transformed_data[, 2])
+
+# View summary of ICA results
+summary(ica_result)
+
+# Scatter plot of independent components
+ggplot(ica_df, aes(x = IC1, y = IC2)) +
+  geom_point() +
+  labs(title = "ICA Scatter Plot", x = "Independent Component 1", y = "Independent Component 2")
