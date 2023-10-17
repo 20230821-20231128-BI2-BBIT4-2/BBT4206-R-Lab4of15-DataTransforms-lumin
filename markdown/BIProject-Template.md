@@ -20,12 +20,18 @@ Business Intelligence Project
   Transform](#step-7-apply-a-box-cox-power-transform)
 - [STEP 8. Apply a Yeo-Johnson Power
   Transform](#step-8-apply-a-yeo-johnson-power-transform)
+- [STEP 9.a. PCA Linear Algebra Transform for Dimensionality
+  Reduction](#step-9a-pca-linear-algebra-transform-for-dimensionality-reduction)
+- [STEP 9.b. PCA Linear Algebra Transform for Feature
+  Extraction](#step-9b-pca-linear-algebra-transform-for-feature-extraction)
+- [STEP 10. ICA Linear Algebra Transform for Dimensionality
+  Reduction](#step-10-ica-linear-algebra-transform-for-dimensionality-reduction)
 
 # Student Details
 
 |                                              |                                              |
 |----------------------------------------------|----------------------------------------------|
-| **Student ID Number**                        | 112827,123324,134265                         |
+| **Student ID Number**                        | 112827,132234,134265                         |
 | **Student Name**                             | Kenneth Mungai,Kelly Noella, Emmanuel Kiptoo |
 | **BBIT 4.2 Group**                           | A,B                                          |
 | **BI Project Group Name/ID (if applicable)** | Lumin                                        |
@@ -2511,6 +2517,206 @@ sapply(student_performance_yeo_johnson_transform[, c(5, 10, 15, 20, 25)], sd)
     ##                 0.1400141                 5.3019548                 1.4998135 
     ## testing_and_active_recall                      sq3r 
     ##                 2.0143328                 1.0326928
+
+``` r
+library(readr)
+```
+
+# STEP 9.a. PCA Linear Algebra Transform for Dimensionality Reduction
+
+``` r
+# Load the necessary library for reading CSV files
+library(readr)
+
+# Read the data from a CSV file and assign it to 'student_performance_pca'
+student_performance_pca <- read_csv("/home/ki3ani/BBT4206-R-Lab4of15-DataTransforms-lumin/data/perfomance-dataset.csv")
+```
+
+    ## Rows: 101 Columns: 100
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr  (4): class_group, D - 1. 
+    ## Write two things you like about the teaching ...
+    ## dbl (96): gender, YOB, regret_choosing_bi, drop_bi_now, motivator, read_cont...
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+# Check for missing values and remove rows with missing values
+student_performance_pca <- na.omit(student_performance_pca)
+
+# Identify non-numeric columns and exclude them
+non_numeric_columns <- sapply(student_performance_pca, function(x) !is.numeric(x))
+student_performance_pca <- student_performance_pca[, !non_numeric_columns]
+
+# Identify columns with constant or zero values
+constant_columns <- sapply(student_performance_pca, function(x) length(unique(x)) <= 1)
+
+# Exclude the constant or zero columns
+student_performance_pca <- student_performance_pca[, !constant_columns]
+
+# Perform PCA
+pca_result <- prcomp(student_performance_pca, center = TRUE, scale. = TRUE)
+
+# View summary of PCA results
+summary(pca_result)
+```
+
+    ## Importance of components:
+    ##                           PC1     PC2     PC3     PC4     PC5     PC6     PC7
+    ## Standard deviation     4.0172 2.63753 2.43766 2.24447 2.18881 2.09698 1.90260
+    ## Proportion of Variance 0.1717 0.07401 0.06321 0.05359 0.05097 0.04678 0.03851
+    ## Cumulative Proportion  0.1717 0.24569 0.30890 0.36249 0.41346 0.46024 0.49875
+    ##                            PC8     PC9   PC10    PC11    PC12    PC13    PC14
+    ## Standard deviation     1.84338 1.70074 1.6424 1.59070 1.55401 1.50754 1.46545
+    ## Proportion of Variance 0.03615 0.03077 0.0287 0.02692 0.02569 0.02418 0.02285
+    ## Cumulative Proportion  0.53490 0.56567 0.5944 0.62129 0.64698 0.67116 0.69400
+    ##                          PC15    PC16    PC17    PC18    PC19    PC20    PC21
+    ## Standard deviation     1.4018 1.34968 1.32308 1.29247 1.28054 1.26535 1.20877
+    ## Proportion of Variance 0.0209 0.01938 0.01862 0.01777 0.01744 0.01703 0.01554
+    ## Cumulative Proportion  0.7149 0.73429 0.75291 0.77068 0.78812 0.80516 0.82070
+    ##                           PC22    PC23    PC24    PC25    PC26    PC27    PC28
+    ## Standard deviation     1.17902 1.12256 1.11146 1.07190 0.99706 0.97879 0.94577
+    ## Proportion of Variance 0.01479 0.01341 0.01314 0.01222 0.01058 0.01019 0.00952
+    ## Cumulative Proportion  0.83549 0.84890 0.86204 0.87426 0.88484 0.89503 0.90454
+    ##                           PC29    PC30    PC31    PC32    PC33    PC34   PC35
+    ## Standard deviation     0.91045 0.89007 0.83904 0.81243 0.80881 0.78872 0.7449
+    ## Proportion of Variance 0.00882 0.00843 0.00749 0.00702 0.00696 0.00662 0.0059
+    ## Cumulative Proportion  0.91336 0.92179 0.92928 0.93630 0.94326 0.94988 0.9558
+    ##                           PC36    PC37    PC38    PC39    PC40    PC41   PC42
+    ## Standard deviation     0.72722 0.68637 0.67255 0.66803 0.60873 0.57618 0.5219
+    ## Proportion of Variance 0.00563 0.00501 0.00481 0.00475 0.00394 0.00353 0.0029
+    ## Cumulative Proportion  0.96141 0.96642 0.97123 0.97598 0.97992 0.98345 0.9863
+    ##                           PC43    PC44    PC45   PC46    PC47   PC48    PC49
+    ## Standard deviation     0.50477 0.49161 0.45686 0.4117 0.38112 0.3496 0.28484
+    ## Proportion of Variance 0.00271 0.00257 0.00222 0.0018 0.00155 0.0013 0.00086
+    ## Cumulative Proportion  0.98906 0.99163 0.99385 0.9957 0.99720 0.9985 0.99936
+    ##                           PC50      PC51
+    ## Standard deviation     0.24466 2.536e-14
+    ## Proportion of Variance 0.00064 0.000e+00
+    ## Cumulative Proportion  1.00000 1.000e+00
+
+``` r
+# Access the transformed data (principal components)
+pca_transformed_data <- pca_result$x
+library(readr)
+```
+
+# STEP 9.b. PCA Linear Algebra Transform for Feature Extraction
+
+``` r
+# Perform PCA
+pca_result <- prcomp(student_performance_pca, center = TRUE, scale. = TRUE)
+
+# View summary of PCA results
+summary(pca_result)
+```
+
+    ## Importance of components:
+    ##                           PC1     PC2     PC3     PC4     PC5     PC6     PC7
+    ## Standard deviation     4.0172 2.63753 2.43766 2.24447 2.18881 2.09698 1.90260
+    ## Proportion of Variance 0.1717 0.07401 0.06321 0.05359 0.05097 0.04678 0.03851
+    ## Cumulative Proportion  0.1717 0.24569 0.30890 0.36249 0.41346 0.46024 0.49875
+    ##                            PC8     PC9   PC10    PC11    PC12    PC13    PC14
+    ## Standard deviation     1.84338 1.70074 1.6424 1.59070 1.55401 1.50754 1.46545
+    ## Proportion of Variance 0.03615 0.03077 0.0287 0.02692 0.02569 0.02418 0.02285
+    ## Cumulative Proportion  0.53490 0.56567 0.5944 0.62129 0.64698 0.67116 0.69400
+    ##                          PC15    PC16    PC17    PC18    PC19    PC20    PC21
+    ## Standard deviation     1.4018 1.34968 1.32308 1.29247 1.28054 1.26535 1.20877
+    ## Proportion of Variance 0.0209 0.01938 0.01862 0.01777 0.01744 0.01703 0.01554
+    ## Cumulative Proportion  0.7149 0.73429 0.75291 0.77068 0.78812 0.80516 0.82070
+    ##                           PC22    PC23    PC24    PC25    PC26    PC27    PC28
+    ## Standard deviation     1.17902 1.12256 1.11146 1.07190 0.99706 0.97879 0.94577
+    ## Proportion of Variance 0.01479 0.01341 0.01314 0.01222 0.01058 0.01019 0.00952
+    ## Cumulative Proportion  0.83549 0.84890 0.86204 0.87426 0.88484 0.89503 0.90454
+    ##                           PC29    PC30    PC31    PC32    PC33    PC34   PC35
+    ## Standard deviation     0.91045 0.89007 0.83904 0.81243 0.80881 0.78872 0.7449
+    ## Proportion of Variance 0.00882 0.00843 0.00749 0.00702 0.00696 0.00662 0.0059
+    ## Cumulative Proportion  0.91336 0.92179 0.92928 0.93630 0.94326 0.94988 0.9558
+    ##                           PC36    PC37    PC38    PC39    PC40    PC41   PC42
+    ## Standard deviation     0.72722 0.68637 0.67255 0.66803 0.60873 0.57618 0.5219
+    ## Proportion of Variance 0.00563 0.00501 0.00481 0.00475 0.00394 0.00353 0.0029
+    ## Cumulative Proportion  0.96141 0.96642 0.97123 0.97598 0.97992 0.98345 0.9863
+    ##                           PC43    PC44    PC45   PC46    PC47   PC48    PC49
+    ## Standard deviation     0.50477 0.49161 0.45686 0.4117 0.38112 0.3496 0.28484
+    ## Proportion of Variance 0.00271 0.00257 0.00222 0.0018 0.00155 0.0013 0.00086
+    ## Cumulative Proportion  0.98906 0.99163 0.99385 0.9957 0.99720 0.9985 0.99936
+    ##                           PC50      PC51
+    ## Standard deviation     0.24466 2.536e-14
+    ## Proportion of Variance 0.00064 0.000e+00
+    ## Cumulative Proportion  1.00000 1.000e+00
+
+``` r
+# Access the transformed data (principal components)
+pca_transformed_data <- pca_result$x
+
+# Scree Plot
+factoextra::fviz_eig(pca_result, addlabels = TRUE)
+```
+
+![](BIProject-Template_files/figure-gfm/step-ten-chunk-1.png)<!-- -->
+
+``` r
+# Loading Values
+loadings <- pca_result$rotation[, 1:2]
+
+# Interpretation using Cos2
+cos2 <- loadings^2
+
+# Biplot and Cos2 Combined Plot
+factoextra::fviz_pca_var(X = pca_result, col.var = "cos2",
+                         gradient.cols = c("red", "orange", "green"),
+                         repel = TRUE)
+```
+
+![](BIProject-Template_files/figure-gfm/step-ten-chunk-2.png)<!-- -->
+
+``` r
+library(readr)
+```
+
+# STEP 10. ICA Linear Algebra Transform for Dimensionality Reduction
+
+``` r
+# Assuming you have installed the necessary package
+if (!requireNamespace("fastICA", quietly = TRUE)) {
+  install.packages("fastICA")
+}
+library(fastICA)
+
+# Assuming pca_transformed_data is your dataframe after PCA
+# Select the columns you want to apply ICA on
+ica_data <- pca_transformed_data[, c("PC1", "PC2", "PC3", "PC4")]
+
+# Perform ICA using the "R" method
+ica_result <- fastICA(ica_data, n.comp = 2, method = "R")
+
+# Access the transformed data (independent components)
+ica_transformed_data <- ica_result$S
+
+# Create a dataframe for the transformed data
+ica_df <- data.frame(IC1 = ica_transformed_data[, 1], IC2 = ica_transformed_data[, 2])
+
+# View summary of ICA results
+summary(ica_result)
+```
+
+    ##   Length Class  Mode   
+    ## X 204    -none- numeric
+    ## K   8    -none- numeric
+    ## W   4    -none- numeric
+    ## A   8    -none- numeric
+    ## S 102    -none- numeric
+
+``` r
+# Scatter plot of independent components
+ggplot(ica_df, aes(x = IC1, y = IC2)) +
+  geom_point() +
+  labs(title = "ICA Scatter Plot", x = "Independent Component 1", y = "Independent Component 2")
+```
+
+![](BIProject-Template_files/figure-gfm/step-eleven-chunk-1.png)<!-- -->
 
 ``` r
 library(readr)
