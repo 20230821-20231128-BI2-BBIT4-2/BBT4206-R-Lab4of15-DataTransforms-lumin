@@ -31,7 +31,7 @@ Business Intelligence Project
 
 |                                              |                                              |
 |----------------------------------------------|----------------------------------------------|
-| **Student ID Number**                        | 112827,132234,134265                         |
+| **Student ID Number**                        | 112827,123324,134265                         |
 | **Student Name**                             | Kenneth Mungai,Kelly Noella, Emmanuel Kiptoo |
 | **BBIT 4.2 Group**                           | A,B                                          |
 | **BI Project Group Name/ID (if applicable)** | Lumin                                        |
